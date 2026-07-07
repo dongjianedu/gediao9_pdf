@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>格调人物 - 第6页</title>
+    <style>
+        @page {
+            size: 774px 1095px;
+            margin: 0;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: #fff;
+            color: #333;
+            line-height: 1.8;
+            padding: 20px;
+            width: 774px;
+            margin: 0 auto;
+        }
+        .content {
+            display: grid;
+            grid-template-columns: 248px 30px 1fr;
+        }
+        .left-column {
+            grid-column: 1;
+            font-size: 14px;
+            text-align: justify;
+        }
+        .gutter {
+            grid-column: 2;
+        }
+        .right-column {
+            grid-column: 3;
+            font-size: 14px;
+            text-align: justify;
+        }
+        .left-column .question, .right-column .question {
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .left-column .question {
+            color: #0078d4;
+        }
+        .right-column .question {
+            color: #e60012;
+        }
+        .question:empty { display: none; }
+        .left-column, .right-column { padding-top: 5px; }
+        .left-column p, .right-column p {
+            margin-bottom: 15px;
+            text-indent: 2em;
+        }
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="left-column">
+            <div class="question">{{FILL:left_q3_question}}</div>
+{{FILL:left_q3_answer}}
+        </div>
+
+        <div class="gutter"></div>
+
+        <div class="right-column">
+            <div class="question">{{FILL:right_q5_question}}</div>
+{{FILL:right_q5_answer}}
+
+            <div class="footer">
+                {{FILL:page_footer}}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

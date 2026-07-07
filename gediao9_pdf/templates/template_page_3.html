@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>格调人物 - 第3页</title>
+    <style>
+        @page {
+            size: 774px 1095px;
+            margin: 0;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: #fff;
+            color: #333;
+            line-height: 1.8;
+            padding: 20px;
+            width: 774px;
+            margin: 0 auto;
+        }
+
+        /* ✅ 修复1：用 CSS Grid 替代 float 双栏布局 */
+        .content {
+            display: grid;
+            /* 左栏 5/14 ≈ 35.71%，间距 30px，右栏占剩余空间 */
+            grid-template-columns: 248px 30px 1fr;
+        }
+
+        /* ✅ 修复2：去掉 float / width / margin-right，改由 Grid 控制 */
+        .left-column {
+            grid-column: 1;
+            font-size: 14px;
+            text-align: justify;
+        }
+
+        /* 间距列（空白列，替代原来的 margin-right） */
+        .gutter {
+            grid-column: 2;
+        }
+
+        .right-column {
+            grid-column: 3;
+            font-size: 14px;
+            text-align: justify;
+        }
+        .right-column .question {
+            color: #e60012;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .part-title .question {
+            color: #0078d4;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: #f0f0f0;
+            border: 1px dashed #ccc;
+            /* ✅ 修复3：WeasyPrint 对 flex 在部分版本支持有限，改用 table-cell 垂直居中更稳定 */
+            display: table-cell;
+            vertical-align: middle;
+            text-align: center;
+            color: #999;
+            margin-bottom: 20px;
+        }
+
+        /* image-placeholder 用 table-cell 后需要外层包一个 table */
+        .image-wrapper {
+            display: table;
+            width: 100%;
+            height: 200px;
+            margin-bottom: 20px;
+        }
+
+        .part-title {
+            background: #f5f5f5;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .part-title h3 {
+            color: #0078d4;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .part-title p {
+            font-size: 14px;
+            color: #666;
+        }
+        .right-column p {
+            margin-bottom: 15px;
+            text-indent: 2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="left-column">
+            <div class="image-wrapper">
+                {{FILL:guest_image}}
+            </div>
+            <div class="part-title">
+                <h3>{{FILL:part2_title}}</h3>
+                <div class="question">{{FILL:pa_q1_question}}</div>
+{{FILL:pa_q1_answer}}
+                <div class="question">{{FILL:pa_q2_question}}</div>
+{{FILL:pa_q2_answer}}
+            </div>
+        </div>
+
+        <!-- ✅ 间距列，替代原来左栏的 margin-right: 30px -->
+        <div class="gutter"></div>
+
+        <div class="right-column">
+{{FILL:right_continuation}}
+        </div>
+    </div>
+</body>
+</html>
