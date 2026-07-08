@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文件上传 - 格调九问</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; background: #f5f5f5; color: #333; }
+  .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+  h1 { text-align: center; font-size: 28px; margin-bottom: 8px; color: #1a1a1a; }
+  .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 32px; }
+  .nav { text-align: center; margin-bottom: 24px; }
+  .nav a { color: #4a90d9; text-decoration: none; font-size: 14px; margin: 0 12px; }
+  .nav a:hover { text-decoration: underline; }
+  .card { background: #fff; border-radius: 12px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+  .card h2 { font-size: 18px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e8e8e8; }
+  label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #555; }
+  label .hint { font-weight: 400; color: #aaa; font-size: 12px; }
+  input[type="text"], textarea { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-family: inherit; transition: border-color 0.2s; }
+  input[type="text"]:focus, textarea:focus { outline: none; border-color: #4a90d9; box-shadow: 0 0 0 3px rgba(74,144,217,0.1); }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+  input[type="file"] { width: 100%; padding: 8px; border: 1px dashed #ccc; border-radius: 8px; font-size: 13px; background: #fafafa; }
+  .btn { display: block; width: 100%; padding: 14px; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .btn:hover { background: #333; }
+  .btn:disabled { background: #ccc; cursor: not-allowed; }
+  .result { margin-top: 20px; }
+  .result .error { color: #e74c3c; background: #fdecea; padding: 14px; border-radius: 8px; }
+  .result .success { color: #155724; background: #d4edda; padding: 14px; border-radius: 8px; }
+  .result .success code { background: #b7dfc5; padding: 2px 6px; border-radius: 4px; }
+  .result .success ul { margin: 10px 0 0 20px; }
+  .note { background: #eaf2fb; border: 1px solid #b8d4f0; border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 13px; color: #2c5282; line-height: 1.7; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>格调九问 · 文件上传</h1>
+  <p class="subtitle">上传访谈资料，自动整理为标准输入目录格式</p>
+
+  <div class="nav">
+    <a href="/">6 页 PDF 生成</a>
+    <a href="/upload" style="font-weight:600;">文件上传整理</a>
+  </div>
+
+  <div class="note">
+    上传后将在 <code>gediaoTemplate\gediao_temp_content\</code> 下创建以「嘉宾姓名_时间戳」命名的目录，包含自我介绍、格调9问 TXT 和人物照片。
+  </div>
+
+  <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+    <div class="card">
+      <h2>嘉宾信息</h2>
+      <label>嘉宾姓名 <span class="hint">(必填，用于目录和文件名)</span></label>
+      <input type="text" name="guest_name" required placeholder="如：黄新强">
+    </div>
+
+    <div class="card">
+      <h2>自我介绍</h2>
+      <textarea name="bio" rows="8" placeholder="请粘贴嘉宾的自我介绍/个人简介..."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>格调九问</h2>
+      <label>上传 TXT 文件 <span class="hint">(必填)</span></label>
+      <input type="file" name="qa_file" accept=".txt" required>
+    </div>
+
+    <div class="card">
+      <h2>人物照片 <span class="hint">(可选，保存为 page1.jpg)</span></h2>
+      <input type="file" name="photo" accept="image/*">
+    </div>
+
+    <div class="card">
+      <button type="submit" class="btn" id="submitBtn">上传并整理</button>
+    </div>
+  </form>
+
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+const form = document.getElementById('uploadForm');
+const btn = document.getElementById('submitBtn');
+const result = document.getElementById('result');
+
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  btn.disabled = true;
+  btn.textContent = '正在上传整理...';
+  result.innerHTML = '';
+
+  try {
+    const formData = new FormData(form);
+    const resp = await fetch('/upload', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      throw new Error(data.error || data.detail || '上传失败');
+    }
+
+    let html = '<div class="success">';
+    html += '<strong>上传成功</strong><br><br>';
+    html += '输出目录：<code>' + data.directory + '</code><br><br>';
+    html += '已创建文件：';
+    html += '<ul>';
+    for (const f of data.files) {
+      html += '<li>' + f + '</li>';
+    }
+    html += '</ul></div>';
+    result.innerHTML = html;
+  } catch (err) {
+    result.innerHTML = '<div class="error">' + err.message + '</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '上传并整理';
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>格调九问 PDF 排版</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; background: #f5f5f5; color: #333; }
+  .container { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+  h1 { text-align: center; font-size: 28px; margin-bottom: 8px; color: #1a1a1a; }
+  .subtitle { text-align: center; color: #888; font-size: 14px; margin-bottom: 32px; }
+  .card { background: #fff; border-radius: 12px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 20px; }
+  .card h2 { font-size: 18px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e8e8e8; }
+  .row { display: flex; gap: 16px; margin-bottom: 16px; }
+  .row > div { flex: 1; }
+  label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; color: #555; }
+  label .hint { font-weight: 400; color: #aaa; font-size: 12px; }
+  input[type="text"], textarea { width: 100%; padding: 10px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; font-family: inherit; transition: border-color 0.2s; }
+  input[type="text"]:focus, textarea:focus { outline: none; border-color: #4a90d9; box-shadow: 0 0 0 3px rgba(74,144,217,0.1); }
+  textarea { resize: vertical; min-height: 120px; line-height: 1.6; }
+  .file-row { display: flex; gap: 16px; margin-bottom: 16px; }
+  .file-row > div { flex: 1; }
+  input[type="file"] { width: 100%; padding: 8px; border: 1px dashed #ccc; border-radius: 8px; font-size: 13px; background: #fafafa; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .checkbox-row input[type="checkbox"] { width: 18px; height: 18px; }
+  .btn { display: block; width: 100%; padding: 14px; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .btn:hover { background: #333; }
+  .btn:disabled { background: #ccc; cursor: not-allowed; }
+  .result { margin-top: 20px; text-align: center; }
+  .result .error { color: #e74c3c; }
+  .result .success { color: #27ae60; }
+  .result .url-box { margin-top: 12px; padding: 12px; background: #f8f9fa; border-radius: 8px; word-break: break-all; }
+  .result .url-box a { color: #4a90d9; text-decoration: none; }
+  .result .url-box a:hover { text-decoration: underline; }
+  .result .btn-group { margin-top: 12px; display: flex; gap: 10px; justify-content: center; }
+  .result .btn-sm { padding: 8px 16px; font-size: 14px; border-radius: 6px; cursor: pointer; border: none; }
+  .result .btn-copy { background: #6c757d; color: #fff; }
+  .result .btn-copy:hover { background: #5a6268; }
+  .result .btn-download { background: #28a745; color: #fff; }
+  .result .btn-download:hover { background: #218838; }
+  .result .copied { background: #28a745 !important; }
+  .format-note { background: #fef9e7; border: 1px solid #f9e79f; border-radius: 8px; padding: 14px; margin-bottom: 16px; font-size: 13px; color: #7d6608; line-height: 1.7; }
+  .format-note code { background: #fdebd0; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+  .nav { text-align: center; margin-bottom: 24px; }
+  .nav a { color: #4a90d9; text-decoration: none; font-size: 14px; margin: 0 12px; }
+  .nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>格调九问 PDF 排版</h1>
+  <p class="subtitle">填写访谈内容，一键生成 6 页 A4 杂志排版 PDF</p>
+
+  <div class="nav">
+    <a href="/" style="font-weight:600;">6 页 PDF 生成</a>
+    <a href="/upload">文件上传整理</a>
+  </div>
+
+  <form id="generateForm" action="/generate" method="post" enctype="multipart/form-data">
+    <div class="card">
+      <h2>基本信息</h2>
+      <div class="row">
+        <div>
+          <label>嘉宾姓名 <span class="hint">(必填)</span></label>
+          <input type="text" name="guest_name" required placeholder="如：张三">
+        </div>
+        <div>
+          <label>采访人</label>
+          <input type="text" name="interviewer" placeholder="如：李四">
+        </div>
+        <div>
+          <label>日期</label>
+          <input type="text" name="date" placeholder="如：2025年1月">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>格调自述</h2>
+      <textarea name="bio" rows="6" placeholder="请粘贴嘉宾的自我介绍/个人简介..."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>格调九问</h2>
+      <div class="format-note">
+        请按照以下格式填入访谈内容（确保包含 <code>PART1</code> 和 <code>PART2</code> 标记）：<br>
+        PART1<br>
+        1. 第一个问题？<br>
+        回答内容...<br>
+        2. 第二个问题？<br>
+        回答内容...<br><br>
+        PART2<br>
+        1. 第一个问题？<br>
+        回答内容...
+      </div>
+      <textarea name="qa_text" rows="14" placeholder="PART1
+1. 请简单介绍一下您自己？
+（嘉宾回答）...
+
+PART2
+1. 您如何看待...
+（嘉宾回答）..."></textarea>
+    </div>
+
+    <div class="card">
+      <h2>封面头像 <span class="hint">(可选)</span></h2>
+      <div>
+        <input type="file" name="page1_image" accept="image/*">
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="checkbox-row">
+        <input type="checkbox" name="no_llm" id="no_llm" value="true">
+        <label for="no_llm" style="margin-bottom:0;">禁用 LLM 简介压缩</label>
+      </div>
+      <button type="submit" class="btn" id="submitBtn">生成 PDF</button>
+    </div>
+  </form>
+
+  <div class="result" id="result"></div>
+</div>
+
+<script>
+const form = document.getElementById('generateForm');
+const btn = document.getElementById('submitBtn');
+const result = document.getElementById('result');
+
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  btn.disabled = true;
+  btn.textContent = '正在生成中，请耐心等待...';
+  result.innerHTML = '<p style="color:#888;">处理中，大型文档可能需要 1-2 分钟...</p>';
+
+  try {
+    const formData = new FormData(form);
+    const resp = await fetch('/generate', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      throw new Error(data.error || data.detail || '生成失败');
+    }
+
+    if (data.success && data.url) {
+      result.innerHTML = `
+        <div class="success">
+          <strong>✓ PDF 生成成功</strong>
+          <div class="url-box">
+            <a href="${data.url}" target="_blank" id="pdfUrl">${data.url}</a>
+          </div>
+          <div class="btn-group">
+            <button class="btn-sm btn-copy" onclick="copyUrl()">复制链接</button>
+            <a href="${data.url}" target="_blank" class="btn-sm btn-download">下载 PDF</a>
+          </div>
+        </div>
+      `;
+    } else {
+      throw new Error(data.error || '未知错误');
+    }
+  } catch (err) {
+    result.innerHTML = '<p class="error">' + err.message + '</p>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '生成 PDF';
+  }
+});
+
+function copyUrl() {
+  const url = document.getElementById('pdfUrl').href;
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.querySelector('.btn-copy');
+    const originalText = btn.textContent;
+    btn.textContent = '已复制!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>

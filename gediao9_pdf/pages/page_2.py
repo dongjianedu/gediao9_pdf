@@ -51,13 +51,16 @@ class Page2Generator(PageGenerator):
                 q2_question_text = f"2. {q_text}"
                 q2_answer_text = ans_text
             elif q_num == 3:
-                q3_section = f'\n\n<div class="question">3. {q_text}</div>\n{ans_text}'
+                q3_section = ('\n\n<div class="question">3. '
+                              + _html.escape(q_text)
+                              + '</div>\n'
+                              + _html.escape(ans_text).replace("\n", "<br>"))
                 break
 
         fields = {
             "career_story": _html.escape(q1_remaining).replace("\n", "<br>"),
             "q2_question":  _html.escape(q2_question_text),
-            "q2_answer":    _html.escape(q2_answer_text + q3_section).replace("\n", "<br>"),
+            "q2_answer":    _html.escape(q2_answer_text).replace("\n", "<br>") + q3_section,
         }
 
         html = self.fill(fields)

@@ -10,5 +10,14 @@ dependencies = [
     "openai>=1.0.0",
 ]
 
+[project.optional-dependencies]
+api = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
+    "python-multipart>=0.0.5",
+    "jinja2>=3.0.0",
+]
+
 [project.scripts]
 gediao9 = "gediao9_pdf.cli:main"
+gediao9-api = "gediao9_pdf.api:main"
