@@ -1,0 +1,10 @@
+.git
+.gitignore
+.idea
+__pycache__
+*.pyc
+*.egg-info
+.env
+output
+tests/_test_output
+tests/
